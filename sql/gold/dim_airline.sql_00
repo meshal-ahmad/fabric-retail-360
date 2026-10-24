@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS gold.dim_airline;
+CREATE TABLE gold.dim_airline AS
+SELECT ROW_NUMBER() OVER (ORDER BY airline_name, airline_iata) AS airline_key,
+       airline_name, airline_iata, MAX(airline_icao) AS airline_icao
+FROM lh_ruh_airport.dbo.silver_flights
+GROUP BY airline_name, airline_iata;

@@ -1,0 +1,9 @@
+CREATE TABLE gold.dim_airport AS
+SELECT ROW_NUMBER() OVER (ORDER BY other_airport_name, other_airport_iata) AS airport_key,
+       CONCAT(other_airport_name, '|', ISNULL(other_airport_iata, 'N/A')) AS airport_nk,
+       other_airport_name AS airport_name,
+       other_airport_iata AS airport_iata,
+       MAX(other_airport_icao) AS airport_icao,
+       MAX(other_airport_timezone) AS timezone
+FROM lh_ruh_airport.dbo.silver_flights
+GROUP BY other_airport_name, other_airport_iata;

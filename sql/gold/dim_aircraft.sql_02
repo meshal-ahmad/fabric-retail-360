@@ -1,0 +1,4 @@
+CREATE TABLE gold.dim_aircraft AS
+SELECT ROW_NUMBER() OVER (ORDER BY aircraft_model) AS aircraft_key, aircraft_model
+FROM (SELECT DISTINCT ISNULL(aircraft_model, 'Unknown') AS aircraft_model
+      FROM lh_ruh_airport.dbo.silver_flights) x;

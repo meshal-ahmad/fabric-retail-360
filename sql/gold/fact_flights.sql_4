@@ -1,0 +1,25 @@
+CREATE TABLE gold.fact_flights AS
+SELECT ROW_NUMBER() OVER (ORDER BY s.scheduled_riyadh, s.flight_number) AS flight_key,
+       d.date_key,
+       DATEPART(hour, s.scheduled_riyadh) AS hour_of_day,
+       s.scheduled_riyadh,
+       a.airline_key,
+       c.aircraft_key,
+       p.airport_key,
+       s.flight_number,
+       s.flight_type,
+       s.status,
+       s.terminal,
+       s.is_cargo,
+       s.is_canceled,
+       s.codeshare_status,
+       s.airport_code_source
+FROM lh_ruh_airport.dbo.silver_flights s
+LEFT JOIN gold.dim_date d
+  ON d.date_key = YEAR(s.scheduled_riyadh)*10000 + MONTH(s.scheduled_riyadh)*100 + DAY(s.scheduled_riyadh)
+LEFT JOIN gold.dim_airline a
+  ON a.airline_name = s.airline_name AND ISNULL(a.airline_iata,'') = ISNULL(s.airline_iata,'')
+LEFT JOIN gold.dim_aircraft c
+  ON c.aircraft_model = ISNULL(s.aircraft_model,'Unknown')
+LEFT JOIN gold.dim_airport p
+  ON p.airport_nk = CONCAT(s.other_airport_name,'|',ISNULL(s.other_airport_iata,'N/A'));

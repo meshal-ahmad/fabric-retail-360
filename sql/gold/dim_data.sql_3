@@ -1,0 +1,10 @@
+CREATE TABLE gold.dim_date AS
+SELECT YEAR(d)*10000 + MONTH(d)*100 + DAY(d) AS date_key,
+       d AS full_date,
+       YEAR(d) AS year,
+       MONTH(d) AS month,
+       CAST(DATENAME(month, d) AS VARCHAR(20)) AS month_name,
+       CAST(DATENAME(weekday, d) AS VARCHAR(20)) AS day_name,
+       CASE WHEN DATENAME(weekday, d) IN ('Friday','Saturday') THEN 1 ELSE 0 END AS is_weekend
+FROM (SELECT DISTINCT CAST(scheduled_riyadh AS date) AS d
+      FROM lh_ruh_airport.dbo.silver_flights) x;
